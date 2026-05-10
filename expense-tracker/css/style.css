@@ -1,0 +1,43 @@
+﻿.transaction-item:hover {
+    transform: translateY(-2px);
+    transition: all 0.3s ease;
+    border-color: #818cf8;
+}
+
+.delete-btn:hover, .edit-btn:hover {
+    opacity: 0.8;
+    transform: scale(0.95);
+}
+
+input:focus, select:focus {
+    outline: none;
+    border-color: #818cf8;
+    box-shadow: 0 0 0 2px rgba(129, 140, 248, 0.2);
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #818cf8;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #6366f1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.page.active {
+    animation: fadeIn 0.5s ease-out;
+}
