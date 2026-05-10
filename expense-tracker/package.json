@@ -1,11 +1,7 @@
-{
-    "name": "expense-tracker",
-    "version": "1.0.0",
-    "scripts": {
-        "vercel-build": "echo Build completed"
-    },
-    "dependencies": {
-        "pg": "^8.11.3",
-        "jsonwebtoken": "^9.0.2"
-    }
+﻿{
+  "name": "expense-tracker-api",
+  "version": "1.0.0",
+  "dependencies": {
+    "pg": "^8.11.3"
+  }
 }
