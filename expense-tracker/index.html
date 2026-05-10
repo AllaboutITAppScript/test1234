@@ -12,10 +12,123 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Fallback styles in case CSS not loaded */
+        .card {
+            background: white;
+            border-radius: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.03);
+            transition: all 0.2s;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 32px;
+            color: white;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: 0.2s;
+            cursor: pointer;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.97);
+        }
+
+        .input-modern {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 8px 12px;
+            transition: 0.2s;
+            background: white;
+        }
+
+        .input-modern:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .category-badge {
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #334155;
+            display: inline-block;
+        }
+
+        .transaction-item:hover {
+            background: #f8fafc;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #e2e8f0;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .transaction-table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #64748b;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .transaction-table td {
+            padding: 12px 16px;
+            font-size: 0.875rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        @media (max-width: 640px) {
+            .card {
+                border-radius: 24px;
+            }
+
+            .category-badge {
+                padding: 4px 10px;
+                font-size: 0.7rem;
+            }
+        }
+    </style>
 </head>
 
-<body class="antialiased">
+<body class="antialiased" style="background: #f5f7fb; font-family: 'Inter', sans-serif;">
 
     <div class="max-w-6xl mx-auto px-4 py-5 md:py-8">
         <!-- Navigation Bar -->
@@ -31,15 +144,15 @@
                 </div>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="index.html" class="px-4 py-2 bg-indigo-500 text-white rounded-2xl text-sm font-medium"><i
+                <a href="/index.html" class="px-4 py-2 bg-indigo-500 text-white rounded-2xl text-sm font-medium"><i
                         class="fas fa-home mr-1"></i> หน้าแรก</a>
-                <a href="pages/reports.html"
+                <a href="/pages/reports.html"
                     class="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-2xl text-sm"><i
                         class="fas fa-chart-pie mr-1"></i> รายงาน</a>
-                <a href="pages/budget.html"
+                <a href="/pages/budget.html"
                     class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-2xl text-sm"><i
                         class="fas fa-chart-line mr-1"></i> งบประมาณ</a>
-                <a href="pages/recurring.html"
+                <a href="/pages/recurring.html"
                     class="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-2xl text-sm"><i
                         class="fas fa-sync-alt mr-1"></i> รายประจำ</a>
             </div>
@@ -168,11 +281,44 @@
         </div>
     </div>
 
-    <script src="js/utils.js"></script>
-    <script src="js/api.js"></script>
-    <script src="js/auth.js"></script>
-    <script src="js/components.js"></script>
-    <script src="js/main.js"></script>
+    <!-- Inline JavaScript for critical functions (fallback) -->
+    <script>
+        // Fallback functions in case external JS not loaded
+        window.showLoading = function () {
+            const el = document.getElementById('loadingOverlay');
+            if (el) el.style.display = 'flex';
+        };
+        window.hideLoading = function () {
+            const el = document.getElementById('loadingOverlay');
+            if (el) el.style.display = 'none';
+        };
+        window.formatCurrency = function (amount, currency = 'THB') {
+            const symbols = { THB: '฿', USD: '$', EUR: '€' };
+            return `${symbols[currency] || '฿'} ${Number(amount).toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+        };
+    </script>
+
+    <script src="/js/utils.js"></script>
+    <script src="/js/api.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/components.js"></script>
+    <script src="/js/main.js"></script>
+
+    <!-- Final initialization check -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOM Loaded - checking if main initialized');
+            if (typeof initMonthYearSelects === 'function' && !window._initialized) {
+                window._initialized = true;
+                if (document.getElementById('monthSelect') && document.getElementById('monthSelect').options.length === 0) {
+                    initMonthYearSelects();
+                }
+                if (document.getElementById('expenseDate')) {
+                    document.getElementById('expenseDate').value = new Date().toISOString().slice(0, 10);
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>
