@@ -11,42 +11,29 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="antialiased" style="background:#f5f7fb; font-family:Inter;">
-
-<div class="max-w-6xl mx-auto px-4 py-5">
-    <!-- Navigation -->
+<body style="background:#f5f7fb; font-family:Inter; padding:20px;">
+<div class="max-w-6xl mx-auto">
     <nav class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-slate-800">💰 Expense Tracker</h1>
-            <p class="text-slate-400 text-sm" id="userDisplay">พร้อมใช้งาน</p>
-        </div>
+        <div><h1 class="text-2xl font-bold">💰 Expense Tracker</h1><p id="userDisplay" class="text-slate-400 text-sm">localhost</p></div>
         <div class="flex gap-2">
-            <a href="index.html" class="px-4 py-2 bg-indigo-500 text-white rounded-xl text-sm">หน้าแรก</a>
-            <a href="pages/reports.html" class="px-4 py-2 bg-slate-600 text-white rounded-xl text-sm">รายงาน</a>
-            <a href="pages/budget.html" class="px-4 py-2 bg-amber-500 text-white rounded-xl text-sm">งบประมา</a>
-            <a href="pages/recurring.html" class="px-4 py-2 bg-emerald-500 text-white rounded-xl text-sm">รายประจำ</a>
+            <a href="index.html" class="bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm">หน้าแรก</a>
+            <a href="pages/reports.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm">รายงาน</a>
+            <a href="pages/budget.html" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-sm">งบประมา</a>
+            <a href="pages/recurring.html" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm">รายประจำ</a>
         </div>
     </nav>
-
-    <!-- Balance Card -->
     <div class="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-2xl p-6 mb-6 text-white">
         <div class="flex justify-between">
             <div><p class="text-white/60">ยอดคงเหลือสุทิ</p><p class="text-3xl font-bold" id="netBalance">฿0</p></div>
             <div class="text-right"><p class="text-emerald-400">รายรับ</p><p class="text-xl font-bold" id="totalIncome">฿0</p><p class="text-rose-400 mt-2">รายจ่าย</p><p class="text-xl font-bold" id="totalExpense">฿0</p></div>
         </div>
     </div>
-
-    <!-- Filter -->
-    <div class="bg-white rounded-2xl p-4 mb-6 shadow-sm">
-        <div class="flex gap-3">
-            <select id="monthSelect" class="border rounded-xl p-2"></select>
-            <select id="yearSelect" class="border rounded-xl p-2"></select>
-            <button id="refreshBtn" class="bg-indigo-500 text-white px-4 rounded-xl"><i class="fas fa-sync-alt"></i> หลด</button>
-            <button id="setupDbBtn" class="bg-emerald-500 text-white px-4 rounded-xl"><i class="fas fa-database"></i> Setup DB</button>
-        </div>
-    </div>
-
-    <!-- Add Form -->
+    <div class="bg-white rounded-2xl p-4 mb-6 shadow-sm"><div class="flex gap-3">
+        <select id="monthSelect" class="border rounded-xl p-2"></select>
+        <select id="yearSelect" class="border rounded-xl p-2"></select>
+        <button id="refreshBtn" class="bg-indigo-500 text-white px-4 rounded-xl"><i class="fas fa-sync-alt"></i> หลด</button>
+        <button id="setupDbBtn" class="bg-emerald-500 text-white px-4 rounded-xl"><i class="fas fa-database"></i> Setup DB</button>
+    </div></div>
     <div class="bg-white rounded-2xl p-5 mb-6 shadow-sm">
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
             <input type="date" id="expenseDate" class="border rounded-xl p-2">
@@ -57,21 +44,10 @@
         </div>
         <button id="addExpenseBtn" class="w-full mt-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 rounded-xl">📌 บันทึก</button>
     </div>
-
-    <!-- Chart -->
-    <div class="bg-white rounded-2xl p-5 mb-6 shadow-sm">
-        <canvas id="categoryChart" height="200"></canvas>
-    </div>
-
-    <!-- Transactions -->
-    <div class="bg-white rounded-2xl overflow-hidden shadow-sm">
-        <div class="p-4 bg-slate-50 font-bold">📋 รายการล่าสุด</div>
-        <div id="transactionsList" class="divide-y"></div>
-    </div>
+    <div class="bg-white rounded-2xl p-5 mb-6 shadow-sm"><canvas id="categoryChart" height="200"></canvas></div>
+    <div class="bg-white rounded-2xl overflow-hidden shadow-sm"><div class="p-4 bg-slate-50 font-bold">📋 รายการล่าสุด</div><div id="transactionsList" class="divide-y"></div></div>
 </div>
-
 <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;"><div class="bg-white p-6 rounded-xl">⏳ กำลังบันทึก...</div></div>
-
 <script src="js/utils.js"></script>
 <script src="js/api.js"></script>
 <script src="js/auth.js"></script>

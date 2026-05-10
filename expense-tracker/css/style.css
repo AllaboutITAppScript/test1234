@@ -1,2 +1,2 @@
-﻿.card { background: white; border-radius: 16px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+﻿* { font-family: "Inter", sans-serif; }
 .category-badge { background: #f1f5f9; padding: 4px 12px; border-radius: 20px; font-size: 12px; }
