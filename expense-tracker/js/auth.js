@@ -2,7 +2,7 @@ let currentUser = null;
 
 async function initLiff() {
     try {
-        await liff.init({ liffId: 'YOUR_LIFF_ID' });
+        await liff.init({ liffId: '2010029314-R9ysVoiR' });
         if (!liff.isLoggedIn()) { liff.login(); return; }
         const profile = await liff.getProfile();
         currentUser = profile;
