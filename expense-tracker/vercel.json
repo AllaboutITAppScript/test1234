@@ -1,31 +1,14 @@
 {
     "version": 2,
-    "builds": [
-        {
-            "src": "server.js",
-            "use": "@vercel/node"
-        },
-        {
-            "src": "*.html",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "pages/*.html",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "css/*.css",
-            "use": "@vercel/static"
-        },
-        {
-            "src": "js/*.js",
-            "use": "@vercel/static"
+    "functions": {
+        "api/expense.js": {
+            "runtime": "nodejs18.x"
         }
-    ],
+    },
     "routes": [
         {
             "src": "/api/(.*)",
-            "dest": "/server.js"
+            "dest": "/api/expense.js"
         },
         {
             "src": "/(.*)",
