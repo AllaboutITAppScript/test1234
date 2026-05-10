@@ -2,56 +2,188 @@
 <html lang="th">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
     <title>Expense Tracker</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding-bottom: 80px; }
+        .glass-card { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); border-radius: 28px; box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
+        .balance-card { background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.1)); backdrop-filter: blur(10px); border-radius: 32px; border: 1px solid rgba(255,255,255,0.2); }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); border-top: 1px solid rgba(255,255,255,0.2); border-radius: 28px 28px 0 0; padding: 8px 20px 20px; box-shadow: 0 -4px 20px rgba(0,0,0,0.05); z-index: 100; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.2s; cursor: pointer; padding: 8px 0; border-radius: 20px; }
+        .nav-item.active { background: linear-gradient(135deg, #667eea20, #764ba220); }
+        .nav-item i { font-size: 22px; transition: all 0.2s; }
+        .nav-item span { font-size: 11px; font-weight: 500; }
+        .input-modern { border: 1px solid #e2e8f0; border-radius: 20px; padding: 12px 16px; width: 100%; font-size: 15px; transition: all 0.2s; background: white; }
+        .input-modern:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 28px; padding: 14px 20px; font-weight: 600; font-size: 16px; transition: all 0.2s; cursor: pointer; width: 100%; }
+        .btn-primary:active { transform: scale(0.97); }
+        .category-badge { display: inline-block; padding: 6px 14px; background: #f1f5f9; border-radius: 40px; font-size: 12px; font-weight: 500; color: #1e293b; }
+        .transaction-item { background: white; border-radius: 20px; padding: 14px 16px; margin-bottom: 8px; transition: all 0.2s; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+        .transaction-item:active { transform: scale(0.98); }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .spinner { width: 50px; height: 50px; border: 4px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .amount-income { color: #10b981; font-weight: 700; }
+        .amount-expense { color: #ef4444; font-weight: 700; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
 </head>
-<body style="background:#f5f7fb; font-family:Inter; padding:20px;">
-<div class="max-w-6xl mx-auto">
-    <nav class="flex justify-between items-center mb-6">
-        <div><h1 class="text-2xl font-bold">💰 Expense Tracker</h1><p id="userDisplay" class="text-slate-400 text-sm">localhost</p></div>
-        <div class="flex gap-2">
-            <a href="index.html" class="bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm">หน้าแรก</a>
-            <a href="pages/reports.html" class="bg-slate-600 text-white px-4 py-2 rounded-xl text-sm">รายงาน</a>
-            <a href="pages/budget.html" class="bg-amber-500 text-white px-4 py-2 rounded-xl text-sm">งบประมา</a>
-            <a href="pages/recurring.html" class="bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm">รายประจำ</a>
+<body>
+
+<!-- Main Container -->
+<div class="px-4 py-4 pb-24 max-w-md mx-auto">
+    
+    <!-- หน้าแรก (Dashboard) -->
+    <div id="page-home" class="page active">
+        <!-- User Header -->
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <p class="text-white/70 text-sm">สวัสดี,</p>
+                <p class="text-white font-semibold text-lg" id="userName">ผ้ใช้</p>
+            </div>
+            <div class="bg-white/20 rounded-full p-2 backdrop-blur">
+                <i class="fas fa-bell text-white text-xl"></i>
+            </div>
         </div>
-    </nav>
-    <div class="bg-gradient-to-r from-indigo-900 to-purple-900 rounded-2xl p-6 mb-6 text-white">
-        <div class="flex justify-between">
-            <div><p class="text-white/60">ยอดคงเหลือสุทิ</p><p class="text-3xl font-bold" id="netBalance">฿0</p></div>
-            <div class="text-right"><p class="text-emerald-400">รายรับ</p><p class="text-xl font-bold" id="totalIncome">฿0</p><p class="text-rose-400 mt-2">รายจ่าย</p><p class="text-xl font-bold" id="totalExpense">฿0</p></div>
+
+        <!-- Balance Card -->
+        <div class="balance-card p-5 mb-5 text-white">
+            <p class="text-white/70 text-sm mb-1">ยอดคงเหลือสุทิ</p>
+            <p class="text-4xl font-bold" id="netBalance">฿0</p>
+            <div class="flex justify-between mt-4 pt-3 border-t border-white/20">
+                <div><p class="text-white/60 text-xs">รายรับ</p><p class="font-semibold text-emerald-300" id="totalIncome">฿0</p></div>
+                <div><p class="text-white/60 text-xs">รายจ่าย</p><p class="font-semibold text-rose-300" id="totalExpense">฿0</p></div>
+            </div>
+        </div>
+
+        <!-- Quick Add Button -->
+        <button id="fabAddBtn" class="bg-white rounded-2xl p-4 w-full mb-5 shadow-lg flex items-center justify-center gap-2 text-slate-700 font-semibold">
+            <i class="fas fa-plus-circle text-indigo-500 text-xl"></i> เพิ่มรายการใหม่
+        </button>
+
+        <!-- Chart -->
+        <div class="glass-card p-4 mb-5">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-semibold text-slate-700"><i class="fas fa-chart-pie text-indigo-500 mr-2"></i> ค่าใช้จ่ายรายหมวด</h3>
+                <select id="chartCurrency" class="text-xs border rounded-xl px-2 py-1 bg-white">
+                    <option value="">ทั้งหมด</option>
+                    <option value="THB">บาท</option>
+                    <option value="USD">USD</option>
+                    <option value="EUR">EUR</option>
+                </select>
+            </div>
+            <canvas id="categoryChart" height="180"></canvas>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="glass-card p-4">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-semibold text-slate-700"><i class="fas fa-clock text-indigo-500 mr-2"></i> รายการล่าสุด</h3>
+                <button id="viewAllBtn" class="text-indigo-500 text-xs">ดทั้งหมด →</button>
+            </div>
+            <div id="recentTransactions"></div>
         </div>
     </div>
-    <div class="bg-white rounded-2xl p-4 mb-6 shadow-sm"><div class="flex gap-3">
-        <select id="monthSelect" class="border rounded-xl p-2"></select>
-        <select id="yearSelect" class="border rounded-xl p-2"></select>
-        <button id="refreshBtn" class="bg-indigo-500 text-white px-4 rounded-xl"><i class="fas fa-sync-alt"></i> หลด</button>
-        <button id="setupDbBtn" class="bg-emerald-500 text-white px-4 rounded-xl"><i class="fas fa-database"></i> Setup DB</button>
-    </div></div>
-    <div class="bg-white rounded-2xl p-5 mb-6 shadow-sm">
-        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <input type="date" id="expenseDate" class="border rounded-xl p-2">
-            <select id="transactionType" class="border rounded-xl p-2"><option value="expense">💸 รายจ่าย</option><option value="income">💵 รายรับ</option></select>
-            <input type="number" id="amount" placeholder="จำนวนเงิน" class="border rounded-xl p-2">
-            <select id="category" class="border rounded-xl p-2"><option>อาหาร</option><option>เดินทาง</option><option>ช้อปปิ้ง</option><option>อื่นๆ</option></select>
-            <input type="text" id="description" placeholder="รายละเอียด" class="border rounded-xl p-2">
+
+    <!-- หน้ารายการทั้งหมด -->
+    <div id="page-transactions" class="page">
+        <div class="glass-card p-4 mb-4">
+            <div class="flex gap-3">
+                <select id="monthSelect" class="input-modern text-sm flex-1"></select>
+                <select id="yearSelect" class="input-modern text-sm w-24"></select>
+                <button id="filterBtn" class="bg-indigo-500 text-white px-4 rounded-xl text-sm"><i class="fas fa-search"></i></button>
+            </div>
         </div>
-        <button id="addExpenseBtn" class="w-full mt-4 bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2 rounded-xl">📌 บันทึก</button>
+        <div class="glass-card p-4" id="allTransactionsList"></div>
     </div>
-    <div class="bg-white rounded-2xl p-5 mb-6 shadow-sm"><canvas id="categoryChart" height="200"></canvas></div>
-    <div class="bg-white rounded-2xl overflow-hidden shadow-sm"><div class="p-4 bg-slate-50 font-bold">📋 รายการล่าสุด</div><div id="transactionsList" class="divide-y"></div></div>
+
+    <!-- หน้าเพิ่ม/แก้ไข -->
+    <div id="page-add" class="page">
+        <div class="glass-card p-5">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">เพิ่มรายการใหม่</h2>
+            <div class="space-y-3">
+                <input type="date" id="expenseDate" class="input-modern">
+                <div class="flex gap-3">
+                    <button id="typeExpenseBtn" class="flex-1 py-3 rounded-xl bg-rose-50 text-rose-500 font-semibold border-2 border-rose-200"><i class="fas fa-arrow-down mr-2"></i> รายจ่าย</button>
+                    <button id="typeIncomeBtn" class="flex-1 py-3 rounded-xl bg-emerald-50 text-emerald-500 font-semibold"><i class="fas fa-arrow-up mr-2"></i> รายรับ</button>
+                </div>
+                <input type="number" id="amount" placeholder="จำนวนเงิน" class="input-modern">
+                <select id="category" class="input-modern">
+                    <option value="อาหาร">🍔 อาหาร</option>
+                    <option value="เดินทาง">🚗 เดินทาง</option>
+                    <option value="ช้อปปิ้ง">🛍️ ช้อปปิ้ง</option>
+                    <option value="บันเทิง">🎬 บันเทิง</option>
+                    <option value="สุขภาพ">💊 สุขภาพ</option>
+                    <option value="เงินเดือน">�� เงินเดือน</option>
+                    <option value="อื่นๆ">📌 อื่นๆ</option>
+                </select>
+                <select id="currency" class="input-modern">
+                    <option value="THB">🇹🇭 บาท (THB)</option>
+                    <option value="USD">🇺🇸 ดอลลาร (USD)</option>
+                    <option value="EUR">🇪🇺 ยร (EUR)</option>
+                </select>
+                <input type="text" id="description" placeholder="รายละเอียด (ไม่บังคับ)" class="input-modern">
+                <button id="saveTransactionBtn" class="btn-primary mt-2"><i class="fas fa-save mr-2"></i> บันทึก</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- หน้ารายงาน -->
+    <div id="page-reports" class="page">
+        <div class="glass-card p-4 mb-4">
+            <select id="reportMonth" class="input-modern text-sm w-full"></select>
+        </div>
+        <div class="glass-card p-4 mb-4">
+            <h3 class="font-semibold text-slate-700 mb-3">📊 รายรับ-รายจ่ายรายเดือน</h3>
+            <canvas id="trendChart" height="200"></canvas>
+        </div>
+        <div class="glass-card p-4">
+            <h3 class="font-semibold text-slate-700 mb-3">🏷️ หมวดหม่ยอดนิยม</h3>
+            <div id="topCategories"></div>
+        </div>
+    </div>
+
+    <!-- หน้างบประมา -->
+    <div id="page-budget" class="page">
+        <div class="glass-card p-5">
+            <h2 class="text-xl font-bold text-slate-800 mb-4">🎯 ตั้งงบประมารายเดือน</h2>
+            <div class="space-y-4">
+                <div><label class="text-sm text-slate-600">🇹🇭 บาท (THB)</label><input type="number" id="budgetThb" class="input-modern mt-1" placeholder="จำนวนงบ"></div>
+                <div><label class="text-sm text-slate-600">🇺🇸 ดอลลาร (USD)</label><input type="number" id="budgetUsd" class="input-modern mt-1" placeholder="จำนวนงบ"></div>
+                <div><label class="text-sm text-slate-600">🇪🇺 ยร (EUR)</label><input type="number" id="budgetEur" class="input-modern mt-1" placeholder="จำนวนงบ"></div>
+                <button id="saveBudgetBtn" class="btn-primary mt-2"><i class="fas fa-save mr-2"></i> บันทึกงบประมา</button>
+            </div>
+            <div id="budgetAlert" class="mt-4 p-3 bg-amber-50 rounded-xl text-amber-700 text-sm hidden"></div>
+        </div>
+    </div>
 </div>
-<div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;"><div class="bg-white p-6 rounded-xl">⏳ กำลังบันทึก...</div></div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <div class="flex justify-around">
+        <div class="nav-item" data-page="home"><i class="fas fa-home text-indigo-500"></i><span class="text-indigo-600">หน้าแรก</span></div>
+        <div class="nav-item" data-page="transactions"><i class="fas fa-list-ul text-slate-500"></i><span>รายการ</span></div>
+        <div class="nav-item" data-page="reports"><i class="fas fa-chart-line text-slate-500"></i><span>รายงาน</span></div>
+        <div class="nav-item" data-page="budget"><i class="fas fa-chart-pie text-slate-500"></i><span>งบประมา</span></div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div id="loadingOverlay" class="loading-overlay"><div class="spinner"></div></div>
+
 <script src="js/utils.js"></script>
 <script src="js/api.js"></script>
-<script src="js/auth.js"></script>
-<script src="js/components.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
